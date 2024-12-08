@@ -1,0 +1,18 @@
+version: '3.8'
+services:
+  api:
+    build:
+      context: .
+      dockerfile: BlazorMessagesAPI/Dockerfile
+    ports:
+      - "5000:5000"
+    depends_on:
+      - sqlserver
+
+  sqlserver:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    environment:
+      ACCEPT_EULA: "Y"
+      SA_PASSWORD: "YourPassword123"
+    ports:
+      - "1433:1433"

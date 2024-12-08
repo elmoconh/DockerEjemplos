@@ -1,0 +1,31 @@
+@inject BlazorMessagesApp.Services.MessageService MessageService
+
+<h3>Messages</h3>
+
+<ul>
+    @foreach (var message in messages)
+    {
+        <li>@message.Content (@message.CreatedAt.ToString("g"))</li>
+    }
+</ul>
+
+<input @bind="newMessage" placeholder="Write a message..." />
+<button @onclick="SendMessage">Send</button>
+
+@code {
+    private List<Message> messages = new();
+    private string newMessage = string.Empty;
+
+    protected override async Task OnInitializedAsync()
+    {
+        messages = (await MessageService.GetMessagesAsync()).ToList();
+    }
+
+    private async Task SendMessage()
+    {
+        var message = new Message { Content = newMessage, CreatedAt = DateTime.UtcNow };
+        await MessageService.SendMessageAsync(message);
+        messages.Add(message);
+        newMessage = string.Empty;
+    }
+}

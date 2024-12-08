@@ -1,0 +1,24 @@
+# Etapa 1: Restauración y compilación de dependencias
+FROM mcr.microsoft.com/dotnet/sdk:7.0 AS build-env
+WORKDIR /app
+
+# Copiar archivos del proyecto
+COPY *.csproj ./
+RUN dotnet restore
+
+# Copiar todo el código y compilarlo
+COPY . ./
+RUN dotnet publish -c Release -o out
+
+# Etapa 2: Configuración de la imagen final
+FROM mcr.microsoft.com/dotnet/aspnet:7.0
+WORKDIR /app
+
+# Copiar la aplicación compilada desde la etapa anterior
+COPY --from=build-env /app/out .
+
+# Exponer el puerto que usará la aplicación (usualmente 80 o 5000 para ASP.NET Core)
+EXPOSE 80
+
+# Comando para ejecutar la aplicación
+ENTRYPOINT ["dotnet", "TuProyecto.dll"]
